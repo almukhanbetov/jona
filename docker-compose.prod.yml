@@ -1,0 +1,51 @@
+services:
+  app:
+    image: ${APP_IMAGE}:${IMAGE_TAG}
+    container_name: app_jbet
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - appnet
+
+  db:
+    image: postgres:17
+    container_name: pg_jbet
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - appnet
+
+  caddy:
+    image: caddy:2
+    container_name: caddy_jbet
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./:/var/www/html
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    networks:
+      - appnet
+
+networks:
+  appnet:
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
