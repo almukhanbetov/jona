@@ -1,6 +1,6 @@
 jonathanbet.com {
     encode gzip
     root * /var/www/html/public
-    php_fastcgi app:9000
+    php_fastcgi app_jbet:9000
     file_server
 }
