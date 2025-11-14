@@ -1,7 +1,7 @@
 FROM php:8.3-fpm
 
 RUN apt-get update && apt-get install -y \
-    nano\
+    nano \
     git unzip libpq-dev libzip-dev libpng-dev \
     libjpeg62-turbo-dev libfreetype6-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -15,7 +15,5 @@ WORKDIR /var/www/html
 COPY . .
 
 RUN composer install --no-dev --prefer-dist --optimize-autoloader
-
-RUN php artisan config:clear && php artisan cache:clear
 
 CMD ["php-fpm"]
