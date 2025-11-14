@@ -4,9 +4,7 @@ services:
     container_name: app_jbet
     restart: always
     env_file:
-      - .env
-    volumes:
-      - ./:/var/www/html
+      - .env   
     depends_on:
       - db
     networks:
