@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${APP_IMAGE}:${IMAGE_TAG}
+    image: almuko/jonathanbet-app:latest
     container_name: app_jbet
     restart: always
     env_file:
