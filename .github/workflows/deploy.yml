@@ -1,17 +1,21 @@
 name: 🚀 Deploy Jonathanbet via Docker to VPS
+
 on:
   push:
     branches: ["main"]
+
 env:
   REGISTRY: docker.io
   APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/jonathanbet-app
   IMAGE_TAG: latest
   REMOTE_DIR: /opt/jonathanbet
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: 🧩 Checkout repository
+      - name: 🧩 Checkout repo
         uses: actions/checkout@v4
 
       - name: 🔐 Docker login
@@ -35,20 +39,33 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            echo "→ Create dir"
             mkdir -p ${{ env.REMOTE_DIR }}
             cd ${{ env.REMOTE_DIR }}
 
-            echo "→ Copy docker-compose files"
-            printf "%s" "${{ secrets.APP_ENV_FILE }}" > .env
-            printf "%s" "${{ secrets.CADDYFILE }}" > Caddyfile
-            printf "%s" "${{ secrets.DOCKER_COMPOSE }}" > docker-compose.prod.yml
+            echo "→ Save .env"
+            cat > .env << 'EOF'
+            ${{ secrets.APP_ENV_FILE }}
+            EOF
+
+            echo "→ Save Caddyfile"
+            cat > Caddyfile << 'EOF'
+            ${{ secrets.CADDYFILE }}
+            EOF
+
+            echo "→ Save docker-compose.prod.yml"
+            cat > docker-compose.prod.yml << 'EOF'
+            ${{ secrets.DOCKER_COMPOSE }}
+            EOF
 
             echo "→ Pull image"
             docker pull ${{ env.APP_IMAGE }}:${{ env.IMAGE_TAG }}
 
             echo "→ Restart containers"
-            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml down || true
             docker compose -f docker-compose.prod.yml up -d --force-recreate
 
             echo "→ Run migrations"
-            docker exec app_jbet php artisan migrate --force
+            docker compose exec app_jbet php artisan migrate --force
+
+            echo "→ DONE!"
