@@ -1,5 +1,14 @@
-jonathanbet.com {
+jonathanbet.com, www.jonathanbet.com {
     encode gzip
+
+    root * /var/www/html/public
+    php_fastcgi app_jbet:9000
+    file_server
+}
+
+api.jonathanbet.com {
+    encode gzip
+
     root * /var/www/html/public
     php_fastcgi app_jbet:9000
     file_server
