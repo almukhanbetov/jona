@@ -1,4 +1,5 @@
 services:
+
   app:
     image: almuko/jonathanbet-app:latest
     container_name: app_jbet
@@ -6,12 +7,13 @@ services:
     env_file:
       - .env
     volumes:
-      - appcode:/var/www/html
+      - jbet_appcode:/var/www/html
     depends_on:
       db:
         condition: service_healthy
     networks:
       - appnet
+
   db:
     image: postgres:17
     container_name: pg_jbet
@@ -21,7 +23,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - jbet_pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
       interval: 3s
@@ -29,6 +31,7 @@ services:
       retries: 10
     networks:
       - appnet
+
   caddy:
     image: caddy:2
     container_name: caddy_jbet
@@ -39,16 +42,18 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - appcode:/var/www/html
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
+      - jbet_caddy_data:/data
+      - jbet_caddy_config:/config
+      - jbet_appcode:/var/www/html   # ← Laravel код виден Caddy
     networks:
       - appnet
+
 networks:
   appnet:
+
 volumes:
-  appcode:
-  pgdata:
-  caddy_data:
-  caddy_config:
+  jbet_pgdata:
+  jbet_caddy_data:
+  jbet_caddy_config:
+  jbet_appcode:

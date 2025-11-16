@@ -1,15 +1,21 @@
-jonathanbet.com, www.jonathanbet.com {
+jonathanbet.com {
     encode gzip
 
     root * /var/www/html/public
-    php_fastcgi app_jbet:9000
-    file_server
-}
 
-api.jonathanbet.com {
-    encode gzip
+    # Отдаём статические файлы Vite
+    @static {
+        path /build/* /assets/* /favicon.ico
+    }
+    handle @static {
+        file_server
+    }
 
-    root * /var/www/html/public
+    # Laravel backend
     php_fastcgi app_jbet:9000
-    file_server
+
+    # Laravel fallback
+    try_files {path} /index.php
+
+    tls almuko.m@gmail.com
 }
