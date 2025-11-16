@@ -5,12 +5,13 @@ services:
     restart: always
     env_file:
       - .env
+    volumes:
+      - appcode:/var/www/html
     depends_on:
       db:
         condition: service_healthy
     networks:
       - appnet
-
   db:
     image: postgres:17
     container_name: pg_jbet
@@ -28,7 +29,6 @@ services:
       retries: 10
     networks:
       - appnet
-
   caddy:
     image: caddy:2
     container_name: caddy_jbet
@@ -39,16 +39,16 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - appcode:/var/www/html
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
     networks:
       - appnet
-
 networks:
   appnet:
-
 volumes:
+  appcode:
   pgdata:
   caddy_data:
   caddy_config:

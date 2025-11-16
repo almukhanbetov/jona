@@ -1,18 +1,14 @@
 name: 🚀 Deploy Jonathanbet via Docker to VPS
-
 on:
   push:
     branches: ["main"]
-
 env:
   APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/jonathanbet-app
   IMAGE_TAG: latest
   REMOTE_DIR: /opt/jonathanbet
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: 🧩 Checkout repo
         uses: actions/checkout@v4
